@@ -4,7 +4,8 @@ DO I/O
 WRITE ABOUT 'LEAST POSSIBLE' HEURISTIC
 MAKE PRINT BOARD LOOK BETTER -done
 */
-
+import java.util.*;
+import java.io.*;
 public class Sudoku
 {
 	private static final int BLANK = 9;
@@ -96,9 +97,9 @@ public class Sudoku
 		
 		return true;
 	}
-	public static void printSolution(Sudoku current)
+	public static void printSolution(Sudoku current)//prints every solution to sudoku puzzle
 	{
-		if(current.isSolved())
+		if(current.isSolved())//prints a solution if the board is already solved
 		{
 			current.printBoard();
 			System.out.println();
@@ -126,7 +127,7 @@ public class Sudoku
 			}
 		}
 		
-		//make every move
+		//make every possible move on that space
 		for(int moveTry = 0; moveTry<BOARDLEN; moveTry++)
 		{
 			if(current.isPossible(blankSpace,moveTry))
@@ -139,53 +140,8 @@ public class Sudoku
 		}
 	}
 	
-	public static Sudoku SudokuSolver(Sudoku current)
-	{
-		if(current.isSolved())
-		{
-			//current.printBoard();
-			return current;
-		}
-		
-		//try and make a move on the first blank
-		/*
-		int blankSpace = 0; 
-		while(current.board[blankSpace]!=BLANK)
-		{
-			blankSpace++;
-		}
-		*/
-		
-		//using least possible heuristic - find the space with the least possible moves
-		int minMoves = 10;
-		int blankSpace = 0;
-		for(int i = 0; i<BOARDELEMENTS; i++)
-		{
-			if((current.board[i]==BLANK)&&(current.moveCount(i)<minMoves))
-			{
-				minMoves = current.moveCount(i);
-				blankSpace = i;
-			}
-		}
-		
-		//make every move
-		for(int moveTry = 0; moveTry<BOARDLEN; moveTry++)
-		{
-			if(current.isPossible(blankSpace,moveTry))
-			{
-				Sudoku newSudoku = current.copySudoku();
-				newSudoku.board[blankSpace] = moveTry;
-				Sudoku value = SudokuSolver(newSudoku);
-				if(value!=null)
-					return value;
-				
-			}
-		}
-		
-		return null;
-	}
 	
-	private int moveCount(int space)
+	private int moveCount(int space)//returns the number of possible moves on a space
 	{
 		int possibleMoves = 0;
 		for(int i = 0; i<BOARDLEN; i++)
@@ -278,22 +234,29 @@ public class Sudoku
 		return new Sudoku(puzzleboard);
 	}
 
-	public static void main(String [] args)
+	public static void main(String [] args) throws Exception
 	{
-		//String puzzle = ".................................................................................";
-		String puzzle = ".4..5..67...1...4....2.....1..8..3........2...6...........4..5.3.....8..2........";
+		Scanner userIn = new Scanner(System.in);
+
+		//Greet and get board
+		System.out.println("Welcome to Sudoku\nType in the name of an input board (such as easyBoard.txt)");
+		BufferedReader sudBoard = new BufferedReader(new FileReader( userIn.nextLine()));
+		String puzzle = sudBoard.readLine();
+		
 		Sudoku sudPuzz = str2Sudoku(puzzle);
-		
+
+		//print out input puzzle
+		System.out.println("This is our puzzle:");
 		sudPuzz.printBoard();
-		
-		System.out.println();
-		
-		/*Sudoku Answer = */printSolution(sudPuzz);
-		
-		//Answer.printBoard();
 
-		
+		//print its solution
 
+		System.out.println("\nThis is the solution:");
+		final long startTime = System.currentTimeMillis();
+		printSolution(sudPuzz);
+		final long endTime = System.currentTimeMillis();
+
+		System.out.println("Puzzle solved in "+((double)endTime -startTime)/1000 + " seconds");
 		
 	}
 	
